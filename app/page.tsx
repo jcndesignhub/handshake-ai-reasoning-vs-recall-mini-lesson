@@ -111,7 +111,7 @@ const practiceItems: PracticeItem[] = [
     prompt:
       "A laptop costs $800 after a 20% discount. What was the original price?",
     response:
-      "A 20% discount means you subtract 20% from the original. So 800 − 0.20 = 799.80. The original price was $799.80.",
+      "A 20% discount means you subtract 20% from the original price. So $800 − 0.20 = $799.80. The original price was $799.80.",
     expertLabel: "Reasoning error",
     expertRationale:
       "The model treats 20% as a flat $0.20 subtraction instead of a percentage of the original price. The concept is known, but applied incorrectly.",
@@ -142,7 +142,7 @@ const practiceItems: PracticeItem[] = [
     prompt:
       "A store buys a chair for $40 and sells it for $50. What is the percent profit?",
     response:
-      "Profit = 50 − 40 = 10. Percent profit = 10/50 = 20%. So the profit is 20%.",
+      "Profit = $50 − $40 = $10. Percent profit = 10/50 = 20%. So the profit is 20%.",
     expertLabel: "Reasoning error",
     expertRationale:
       "The model computes profit correctly, but uses the wrong base. Percent profit should be profit/cost, not profit/selling price.",
@@ -537,7 +537,7 @@ export default function Page() {
                   </div>
 
                   <h1 className="mt-2 text-2xl font-bold tracking-tight">
-                    Reasoning vs Recall Errors — DEBUG
+                    Reasoning vs Recall Errors
                   </h1>
 
                   <div
@@ -665,8 +665,11 @@ export default function Page() {
                   }
                 >
                   <p className="text-sm text-slate-700">
-                    Start by determining whether the failure is driven by facts
-                    or by logic.
+  This isn’t about finding the perfect label. It’s about identifying the first failure so feedback improves the model.
+</p>
+
+<p className="mt-2 text-sm text-slate-700">
+  Start by determining whether the failure is driven by facts or by logic.
                   </p>
 
                   <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
@@ -776,18 +779,31 @@ export default function Page() {
 
                   {!printMode && (
                     <div className="mt-4 flex flex-wrap gap-2">
-                      {(
-                        ["Reasoning error", "Recall error", "Mixed signals"] as ExampleTab[]
-                      ).map((t) => (
-                        <Button
-                          key={t}
-                          variant="pill"
-                          onClick={() => setExampleTab(t)}
-                          active={exampleTab === t}
-                        >
-                          {t}
-                        </Button>
-                      ))}
+                      {(["Recall error", "Reasoning error"] as ExampleTab[]).map((t) => (
+  <Button
+    key={t}
+    variant="pill"
+    onClick={() => setExampleTab(t)}
+    active={exampleTab === t}
+  >
+    {t}
+  </Button>
+))}
+
+<button
+  onClick={() => setExampleTab("Mixed signals")}
+  className="rounded-full px-4 py-2 text-sm font-semibold transition hover:opacity-90"
+  style={{
+    background: exampleTab === "Mixed signals" ? "#EFE7FF" : "#FAF8FF",
+    color: "#14151C",
+    border:
+      exampleTab === "Mixed signals"
+        ? "1px solid #D8CCFF"
+        : "1px dashed #D8CCFF",
+  }}
+>
+  Mixed signals
+</button>
                     </div>
                   )}
 
@@ -871,12 +887,17 @@ export default function Page() {
                             >
                               Recall error
                             </Button>
-                            <Button
-                              onClick={() => setMixedMode(true)}
-                              active={mixedMode}
-                            >
-                              Mixed signals
-                            </Button>
+                            <button
+  onClick={() => setMixedMode((v) => !v)}
+  className="rounded-full px-4 py-2 text-sm font-semibold transition hover:opacity-90"
+  style={{
+    background: mixedMode ? "#EFE7FF" : "#FAF8FF",
+    color: "#14151C",
+    border: mixedMode ? "1px solid #D8CCFF" : "1px dashed #D8CCFF",
+  }}
+>
+  Mixed signals
+</button>
                           </div>
 
                           {mixedMode && (
