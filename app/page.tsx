@@ -908,8 +908,8 @@ export default function Page() {
                               <span className="font-semibold">
                                 Mixed signals is not a label.
                               </span>{" "}
-                              It’s a prompt to find the first failure. Use the
-                              steps above, then choose{" "}
+                              It’s a prompt to find the first failure. 
+Identify what broke first, then choose Reasoning or Recall.{" "}
                               <span className="font-semibold">Reasoning</span>{" "}
                               or <span className="font-semibold">Recall</span>.
                             </div>
