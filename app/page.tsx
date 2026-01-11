@@ -328,8 +328,12 @@ function ExampleCard({ ex }: { ex: ExampleItem }) {
         </div>
 
         {ex.tab === "Mixed signals" && (
-          <div className="rounded-xl p-3 text-sm" style={{ background: BRAND.purple }}>
-            <span className="font-semibold">Important:</span> Mixed signals is not a label. It’s a prompt to find the first failure.
+          <div
+            className="rounded-xl p-3 text-sm"
+            style={{ background: BRAND.purple }}
+          >
+            <span className="font-semibold">Important:</span> Mixed signals is
+            not a label. It’s a prompt to find the first failure.
           </div>
         )}
       </div>
@@ -356,11 +360,14 @@ function ComparisonBox({
         <div>
           <div className="text-sm font-semibold">Your answer vs expert</div>
           <div className="mt-1 text-xs text-slate-600">
-            Compare labels first. Then check whether your rationale identifies the first failure.
+            Compare labels first. Then check whether your rationale identifies
+            the first failure.
           </div>
         </div>
 
-        <Badge tone={match ? "lime" : "neutral"}>{match ? "Aligned" : "Different"}</Badge>
+        <Badge tone={match ? "lime" : "neutral"}>
+          {match ? "Aligned" : "Different"}
+        </Badge>
       </div>
 
       <div className="mt-4 grid gap-3 md:grid-cols-2">
@@ -368,7 +375,9 @@ function ComparisonBox({
           <div className="flex items-center justify-between gap-2">
             <div className="text-sm font-semibold">You</div>
             {yourLabel ? (
-              <Badge tone={yourLabel === "Reasoning error" ? "purple" : "blue"}>{yourLabel}</Badge>
+              <Badge tone={yourLabel === "Reasoning error" ? "purple" : "blue"}>
+                {yourLabel}
+              </Badge>
             ) : (
               <Badge tone="neutral">No label</Badge>
             )}
@@ -382,7 +391,9 @@ function ComparisonBox({
         <div className="rounded-2xl border border-slate-200 bg-white p-4">
           <div className="flex items-center justify-between gap-2">
             <div className="text-sm font-semibold">Expert</div>
-            <Badge tone={expertLabel === "Reasoning error" ? "purple" : "blue"}>{expertLabel}</Badge>
+            <Badge tone={expertLabel === "Reasoning error" ? "purple" : "blue"}>
+              {expertLabel}
+            </Badge>
           </div>
           <div className="mt-3 text-sm text-slate-700">
             <span className="font-semibold">Rationale:</span> {expertRationale}
@@ -391,9 +402,13 @@ function ComparisonBox({
       </div>
 
       {!match && yourLabel && (
-        <div className="mt-3 rounded-xl p-3 text-sm" style={{ background: BRAND.gray }}>
-          <span className="font-semibold">Calibration tip:</span> Re-run the decision steps and ask:
-          “Did the model lack correct facts, or did it misuse correct facts?”
+        <div
+          className="mt-3 rounded-xl p-3 text-sm"
+          style={{ background: BRAND.gray }}
+        >
+          <span className="font-semibold">Calibration tip:</span> Re-run the
+          decision steps and ask: “Did the model lack correct facts, or did it
+          misuse correct facts?”
         </div>
       )}
     </div>
@@ -401,20 +416,28 @@ function ComparisonBox({
 }
 
 export default function Page() {
-  const [section, setSection] = useState<"Start" | "Model" | "Heuristic" | "Examples" | "Practice">("Start");
+  const [section, setSection] = useState<
+    "Start" | "Model" | "Heuristic" | "Examples" | "Practice"
+  >("Start");
 
+  // Symmetric page padding + consistent 2-col grid everywhere
   const PAGE_PAD = "px-4 sm:px-8";
   const GRID = "grid grid-cols-[56px_1fr] gap-3";
 
   const [flow, setFlow] = useState<Flow>({});
   const result = useMemo(() => classify(flow), [flow]);
 
-  // ✅ Persist example tab across navigation within the session
+  // ✅ FIX: persist exampleTab so clicking Examples doesn't reset it
   const [exampleTab, setExampleTab] = useState<ExampleTab>("Recall error");
 
   useEffect(() => {
-    const saved = typeof window !== "undefined" ? window.sessionStorage.getItem("hai_example_tab") : null;
-    if (saved === "Recall error" || saved === "Reasoning error" || saved === "Mixed signals") {
+    if (typeof window === "undefined") return;
+    const saved = window.sessionStorage.getItem("hai_example_tab");
+    if (
+      saved === "Recall error" ||
+      saved === "Reasoning error" ||
+      saved === "Mixed signals"
+    ) {
       setExampleTab(saved);
     }
   }, []);
@@ -471,7 +494,8 @@ export default function Page() {
     resetPractice();
   };
 
-  const canRevealExpert = attempted || (practiceType && practiceExplain.trim().length > 0);
+  const canRevealExpert =
+    attempted || (practiceType && practiceExplain.trim().length > 0);
 
   return (
     <main
@@ -485,14 +509,28 @@ export default function Page() {
     >
       {/* subtle background splash */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full blur-3xl opacity-20" style={{ background: BRAND.cyan }} />
-        <div className="absolute top-24 -right-24 h-72 w-72 rounded-full blur-3xl opacity-20" style={{ background: BRAND.blue }} />
-        <div className="absolute bottom-0 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full blur-3xl opacity-15" style={{ background: BRAND.lime }} />
+        <div
+          className="absolute -top-24 -left-24 h-72 w-72 rounded-full blur-3xl opacity-20"
+          style={{ background: BRAND.cyan }}
+        />
+        <div
+          className="absolute top-24 -right-24 h-72 w-72 rounded-full blur-3xl opacity-20"
+          style={{ background: BRAND.blue }}
+        />
+        <div
+          className="absolute bottom-0 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full blur-3xl opacity-15"
+          style={{ background: BRAND.lime }}
+        />
       </div>
 
       {/* header */}
       <div className="border-b border-slate-200 bg-white">
-        <div className="h-2 w-full" style={{ background: `linear-gradient(90deg, ${BRAND.cyan}, ${BRAND.blue})` }} />
+        <div
+          className="h-2 w-full"
+          style={{
+            background: `linear-gradient(90deg, ${BRAND.cyan}, ${BRAND.blue})`,
+          }}
+        />
 
         <div className={`mx-auto max-w-5xl ${PAGE_PAD} py-5`}>
           <div className={GRID}>
@@ -517,17 +555,27 @@ export default function Page() {
                     {printMode && <Badge tone="lime">Print view</Badge>}
                   </div>
 
-                  <h1 className="mt-2 text-2xl font-bold tracking-tight">Reasoning vs Recall Errors</h1>
+                  <h1 className="mt-2 text-2xl font-bold tracking-tight">
+                    Reasoning vs Recall Errors
+                  </h1>
 
-                  <div className="mt-3 h-1 w-24 rounded-full" style={{ background: `linear-gradient(90deg, ${BRAND.cyan}, ${BRAND.blue})` }} />
+                  <div
+                    className="mt-3 h-1 w-24 rounded-full"
+                    style={{
+                      background: `linear-gradient(90deg, ${BRAND.cyan}, ${BRAND.blue})`,
+                    }}
+                  />
 
                   <p className="mt-2 text-base leading-snug text-slate-600">
-                    Learn to distinguish reasoning errors from recall errors by diagnosing what failed first.
+                    Learn to distinguish reasoning errors from recall errors by
+                    diagnosing what failed first.
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Button variant="primary" onClick={printAll}>Print / Save</Button>
+                  <Button variant="primary" onClick={printAll}>
+                    Print / Save
+                  </Button>
                 </div>
               </div>
 
@@ -559,6 +607,7 @@ export default function Page() {
       {/* content */}
       <div className={`mx-auto max-w-5xl ${PAGE_PAD} py-6`}>
         <div className={GRID}>
+          {/* spacer column to align text/cards with nav pills */}
           <div />
           <div className="grid gap-5">
             {show("Start") && (
@@ -566,16 +615,23 @@ export default function Page() {
                 {printMode && <DividerLabel label="Start here" />}
                 <Card title="Start here: Focus on how the failure happened">
                   <p className="text-sm text-slate-700">
-                    When an AI response is wrong, the most important question is not <em>whether</em> it failed, but <em>how</em> it failed.
+                    When an AI response is wrong, the most important question is
+                    not <em>whether</em> it failed, but <em>how</em> it failed.
                   </p>
                   <p className="mt-3 text-sm text-slate-700">
-                    Correctly identifying the failure type leads to better training data and faster model improvement.
+                    Correctly identifying the failure type leads to better
+                    training data and faster model improvement.
                   </p>
 
-                  <div className="mt-4 rounded-xl p-4" style={{ background: BRAND.gray }}>
+                  <div
+                    className="mt-4 rounded-xl p-4"
+                    style={{ background: BRAND.gray }}
+                  >
                     <div className="text-sm font-semibold">Key idea</div>
                     <p className="mt-1 text-sm text-slate-700">
-                      A model can have the right facts and still reach the wrong conclusion (reasoning error). A model can reason well and still fail if its facts are wrong (recall error).
+                      A model can have the right facts and still reach the wrong
+                      conclusion (reasoning error). A model can reason well and
+                      still fail if its facts are wrong (recall error).
                     </p>
                   </div>
                 </Card>
@@ -589,11 +645,14 @@ export default function Page() {
                   <div className="grid gap-3 md:grid-cols-2">
                     <div className="rounded-2xl border border-slate-200 bg-white p-4">
                       <div className="flex items-center justify-between gap-2">
-                        <div className="text-sm font-semibold">Reasoning error</div>
+                        <div className="text-sm font-semibold">
+                          Reasoning error
+                        </div>
                         <Badge tone="purple">Logic breakdown</Badge>
                       </div>
                       <p className="mt-2 text-sm text-slate-700">
-                        The model has the right facts, but applies them incorrectly or breaks down across steps.
+                        The model has the right facts, but applies them
+                        incorrectly or breaks down across steps.
                       </p>
                     </div>
 
@@ -603,7 +662,9 @@ export default function Page() {
                         <Badge tone="blue">Facts wrong/missing</Badge>
                       </div>
                       <p className="mt-2 text-sm text-slate-700">
-                        The model relies on incorrect, missing, or fabricated facts. The logic may look coherent, but the inputs are wrong.
+                        The model relies on incorrect, missing, or fabricated
+                        facts. The logic may look coherent, but the inputs are
+                        wrong.
                       </p>
                     </div>
                   </div>
@@ -616,14 +677,21 @@ export default function Page() {
                 {printMode && <DividerLabel label="How to decide" />}
                 <Card
                   title="How to decide: Classify most failures in under 20 seconds"
-                  right={<Button variant="pill" onClick={() => setFlow({})}>Reset</Button>}
+                  right={
+                    <Button variant="pill" onClick={() => setFlow({})}>
+                      Reset
+                    </Button>
+                  }
                 >
                   <p className="text-sm text-slate-700">
-                    This isn’t about finding the perfect label. It’s about identifying the first failure so feedback improves the model.
+                    This isn’t about finding the perfect label. It’s about
+                    identifying the first failure so feedback improves the
+                    model.
                   </p>
 
                   <p className="mt-2 text-sm text-slate-700">
-                    Start by determining whether the failure is driven by facts or by logic.
+                    Start by determining whether the failure is driven by facts
+                    or by logic.
                   </p>
 
                   <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
@@ -631,25 +699,52 @@ export default function Page() {
                       Step 1: Are the facts correct and sufficient?
                     </div>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      <Button onClick={() => setFlow({ factsCorrect: true })} active={flow.factsCorrect === true}>Yes</Button>
-                      <Button onClick={() => setFlow({ factsCorrect: false })} active={flow.factsCorrect === false}>No</Button>
+                      <Button
+                        onClick={() => setFlow({ factsCorrect: true })}
+                        active={flow.factsCorrect === true}
+                      >
+                        Yes
+                      </Button>
+                      <Button
+                        onClick={() => setFlow({ factsCorrect: false })}
+                        active={flow.factsCorrect === false}
+                      >
+                        No
+                      </Button>
                     </div>
                     <p className="mt-3 text-xs text-slate-600">
-                      If facts are wrong or missing, stop. That’s a recall error.
+                      If facts are wrong or missing, stop. That’s a recall
+                      error.
                     </p>
                   </div>
 
                   {flow.factsCorrect === true && (
                     <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
                       <div className="text-sm font-semibold">
-                        Step 2: Does the logic apply those facts correctly across steps?
+                        Step 2: Does the logic apply those facts correctly
+                        across steps?
                       </div>
                       <div className="mt-3 flex flex-wrap gap-2">
-                        <Button onClick={() => setFlow({ factsCorrect: true, logicCorrect: true })} active={flow.logicCorrect === true}>Yes</Button>
-                        <Button onClick={() => setFlow({ factsCorrect: true, logicCorrect: false })} active={flow.logicCorrect === false}>No</Button>
+                        <Button
+                          onClick={() =>
+                            setFlow({ factsCorrect: true, logicCorrect: true })
+                          }
+                          active={flow.logicCorrect === true}
+                        >
+                          Yes
+                        </Button>
+                        <Button
+                          onClick={() =>
+                            setFlow({ factsCorrect: true, logicCorrect: false })
+                          }
+                          active={flow.logicCorrect === false}
+                        >
+                          No
+                        </Button>
                       </div>
                       <p className="mt-3 text-xs text-slate-600">
-                        Facts right + logic wrong usually signals a reasoning error.
+                        Facts right + logic wrong usually signals a reasoning
+                        error.
                       </p>
                     </div>
                   )}
@@ -657,20 +752,37 @@ export default function Page() {
                   <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
-                        <div className="text-sm font-semibold">Classification</div>
+                        <div className="text-sm font-semibold">
+                          Classification
+                        </div>
                         <div className="mt-1 text-sm text-slate-700">
-                          {result ? <span className="font-semibold">{result}</span> : "Start with Step 1"}
+                          {result ? (
+                            <span className="font-semibold">{result}</span>
+                          ) : (
+                            "Start with Step 1"
+                          )}
                         </div>
                       </div>
                       {result && (
-                        <Badge tone={result === "Reasoning error" ? "purple" : "blue"}>{result}</Badge>
+                        <Badge
+                          tone={
+                            result === "Reasoning error" ? "purple" : "blue"
+                          }
+                        >
+                          {result}
+                        </Badge>
                       )}
                     </div>
 
-                    <div className="mt-3 rounded-xl p-3 text-sm" style={{ background: BRAND.gray }}>
+                    <div
+                      className="mt-3 rounded-xl p-3 text-sm"
+                      style={{ background: BRAND.gray }}
+                    >
                       <div className="font-semibold">Fallback rule</div>
                       <div className="mt-1 text-slate-700">
-                        Identify what failed <span className="font-semibold">first</span>: facts or logic.
+                        Identify what failed{" "}
+                        <span className="font-semibold">first</span>: facts or
+                        logic.
                       </div>
                     </div>
                   </div>
@@ -683,22 +795,33 @@ export default function Page() {
                 {printMode && <DividerLabel label="Examples" />}
                 <Card title="Examples: Spot the pattern fast">
                   <p className="text-sm text-slate-700">
-                    Three error patterns that drive most quality issues in practice. Use the hint, then label what failed first.
+                    Three error patterns that drive most quality issues in
+                    practice. Use the hint, then label what failed first.
                   </p>
 
                   {!printMode && (
                     <div className="mt-4 flex flex-wrap gap-2">
-                      {(["Recall error", "Reasoning error"] as ExampleTab[]).map((t) => (
-                        <Button key={t} variant="pill" onClick={() => setExampleTab(t)} active={exampleTab === t}>
-                          {t}
-                        </Button>
-                      ))}
+                      {(["Recall error", "Reasoning error"] as ExampleTab[]).map(
+                        (t) => (
+                          <Button
+                            key={t}
+                            variant="pill"
+                            onClick={() => setExampleTab(t)}
+                            active={exampleTab === t}
+                          >
+                            {t}
+                          </Button>
+                        )
+                      )}
 
                       <button
                         onClick={() => setExampleTab("Mixed signals")}
                         className="rounded-full px-4 py-2 text-sm font-semibold transition hover:opacity-90"
                         style={{
-                          background: exampleTab === "Mixed signals" ? "#EFE7FF" : "#FAF8FF",
+                          background:
+                            exampleTab === "Mixed signals"
+                              ? "#EFE7FF"
+                              : "#FAF8FF",
                           color: "#14151C",
                           border:
                             exampleTab === "Mixed signals"
@@ -712,35 +835,266 @@ export default function Page() {
                   )}
 
                   <div className="mt-4 grid gap-4">
-                    {printMode ? examples.map((ex) => <ExampleCard key={ex.id} ex={ex} />) : <ExampleCard ex={currentExample} />}
+                    {printMode ? (
+                      examples.map((ex) => <ExampleCard key={ex.id} ex={ex} />)
+                    ) : (
+                      <ExampleCard ex={currentExample} />
+                    )}
                   </div>
                 </Card>
               </>
             )}
 
-            {/* NOTE: Practice section unchanged from your current version for safety */}
-            {/* If you want, I can fold your entire Practice section in here verbatim, but the fix you asked for is already complete above. */}
+            {show("Practice") && (
+              <>
+                {printMode && <DividerLabel label="You try!" />}
+                <Card
+                  title="You try! Make the call, then calibrate"
+                  right={
+                    !printMode ? (
+                      <div className="flex items-center gap-2">
+                        <Button onClick={resetPractice}>Reset</Button>
+                        <Button variant="primary" onClick={nextPractice}>
+                          Next
+                        </Button>
+                      </div>
+                    ) : undefined
+                  }
+                >
+                  <p className="text-sm text-slate-700">
+                    One scenario at a time. Explain what failed first, then
+                    compare to the expert.
+                  </p>
 
-            <style jsx global>{`
-              @media print {
-                button {
-                  display: none !important;
-                }
-                main {
-                  background: white !important;
-                }
-                section {
-                  break-inside: avoid;
-                }
-                pre {
-                  font-size: 11px;
-                  line-height: 1.35;
-                }
-              }
-            `}</style>
+                  <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
+                    <div className="text-sm font-semibold text-slate-900">
+                      Practice scenario {practiceIndex + 1} of{" "}
+                      {practiceItems.length}
+                    </div>
+
+                    <div className="mt-4 grid gap-3">
+                      <div>
+                        <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          Prompt
+                        </div>
+                        <div className="mt-2">
+                          <TextBlock text={currentPractice.prompt} />
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          Model response
+                        </div>
+                        <div className="mt-2">
+                          <TextBlock text={currentPractice.response} />
+                        </div>
+                      </div>
+                    </div>
+
+                    {!printMode && (
+                      <>
+                        <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
+                          <div className="text-sm font-semibold">Your call</div>
+
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            <Button
+                              onClick={() => {
+                                setPracticeType("Reasoning error");
+                                setMixedMode(false);
+                              }}
+                              active={practiceType === "Reasoning error"}
+                            >
+                              Reasoning error
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                setPracticeType("Recall error");
+                                setMixedMode(false);
+                              }}
+                              active={practiceType === "Recall error"}
+                            >
+                              Recall error
+                            </Button>
+
+                            <button
+                              onClick={() => setMixedMode((v) => !v)}
+                              className="rounded-full px-4 py-2 text-sm font-semibold transition hover:opacity-90"
+                              style={{
+                                background: mixedMode ? "#EFE7FF" : "#FAF8FF",
+                                color: "#14151C",
+                                border: mixedMode
+                                  ? "1px solid #D8CCFF"
+                                  : "1px dashed #D8CCFF",
+                              }}
+                            >
+                              Mixed signals
+                            </button>
+                          </div>
+
+                          {mixedMode && (
+                            <div
+                              className="mt-3 rounded-xl p-3 text-sm"
+                              style={{ background: BRAND.purple }}
+                            >
+                              <span className="font-semibold">
+                                Mixed signals is not a label.
+                              </span>{" "}
+                              It’s a prompt to find the first failure. Identify
+                              what broke first, then choose{" "}
+                              <span className="font-semibold">Reasoning</span>{" "}
+                              or <span className="font-semibold">Recall</span>.
+                            </div>
+                          )}
+
+                          <div className="mt-4">
+                            <label className="text-sm font-semibold">
+                              1-sentence rationale (name what failed first)
+                            </label>
+                            <textarea
+                              className="mt-2 w-full rounded-2xl border bg-white p-3 text-sm outline-none focus:ring-2 focus:ring-offset-2"
+                              style={{ borderColor: "#E2E8F0" }}
+                              rows={3}
+                              placeholder='Example: "Facts are correct, but the model applies the rule incorrectly in the setup."'
+                              value={practiceExplain}
+                              onChange={(e) =>
+                                setPracticeExplain(e.target.value)
+                              }
+                            />
+                            <p className="mt-2 text-xs text-slate-600">
+                              If you can’t name what failed first, re-run the
+                              How to decide steps before submitting.
+                            </p>
+                          </div>
+
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            <Button
+                              variant="primary"
+                              onClick={() => {
+                                setAttempted(true);
+                                setMixedMode(false);
+                              }}
+                              disabled={
+                                !practiceType ||
+                                practiceExplain.trim().length === 0
+                              }
+                            >
+                              Submit my answer
+                            </Button>
+
+                            <Button
+                              onClick={() => setShowExpert(true)}
+                              disabled={!canRevealExpert}
+                              active={showExpert}
+                            >
+                              Reveal expert response
+                            </Button>
+                          </div>
+
+                          {attempted && (
+                            <div className="mt-3 text-xs text-slate-600">
+                              Submitted. Now calibrate against the expert.
+                            </div>
+                          )}
+                        </div>
+
+                        {attempted && (
+                          <ComparisonBox
+                            yourLabel={practiceType}
+                            yourRationale={practiceExplain}
+                            expertLabel={currentPractice.expertLabel}
+                            expertRationale={currentPractice.expertRationale}
+                          />
+                        )}
+
+                        {showExpert && (
+                          <div
+                            className="mt-4 rounded-2xl p-4"
+                            style={{ background: BRAND.gray }}
+                          >
+                            <div className="flex flex-wrap items-start justify-between gap-3">
+                              <div>
+                                <div className="text-sm font-semibold">
+                                  Expert response
+                                </div>
+                                <div className="mt-1 text-sm text-slate-700">
+                                  <span className="font-semibold">Label:</span>{" "}
+                                  {currentPractice.expertLabel}
+                                </div>
+                                <div className="mt-2 text-sm text-slate-700">
+                                  <span className="font-semibold">
+                                    1-sentence rationale:
+                                  </span>{" "}
+                                  {currentPractice.expertRationale}
+                                </div>
+                              </div>
+                              <Badge
+                                tone={
+                                  currentPractice.expertLabel ===
+                                  "Reasoning error"
+                                    ? "purple"
+                                    : "blue"
+                                }
+                              >
+                                {currentPractice.expertLabel}
+                              </Badge>
+                            </div>
+
+                            <div className="mt-3">
+                              <div className="text-sm font-semibold">
+                                Key cues the expert used
+                              </div>
+                              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-700">
+                                {currentPractice.keyCues.map((c) => (
+                                  <li key={c}>{c}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </Card>
+              </>
+            )}
+
+            {/* Print-only scale note */}
+            {printMode && (
+              <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                <div className="text-sm font-semibold">Scale note</div>
+                <p className="mt-1 text-sm text-slate-700">
+                  This mini lesson is designed as a reusable template. Swap in
+                  project-specific examples while keeping the same decision
+                  steps and practice loop for consistent judgment across
+                  projects.
+                </p>
+              </div>
+            )}
+
+            {/* subtle bottom breathing room */}
+            <div className="pb-8" />
           </div>
         </div>
       </div>
+
+      <style jsx global>{`
+        @media print {
+          button {
+            display: none !important;
+          }
+          main {
+            background: white !important;
+          }
+          section {
+            break-inside: avoid;
+          }
+          pre {
+            font-size: 11px;
+            line-height: 1.35;
+          }
+        }
+      `}</style>
     </main>
   );
 }
