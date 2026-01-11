@@ -45,22 +45,6 @@ type ExampleItem = {
 
 const examples: ExampleItem[] = [
   {
-    id: "ex_reasoning",
-    tab: "Reasoning error",
-    classification: "Reasoning error",
-    prompt:
-      "A train travels 120 miles in 2 hours. At the same speed, how long will it take to travel 90 miles?",
-    response:
-      "Speed = 120/2 = 60 mph. Time = distance/speed = 90/60 = 2 hours. So it will take 2 hours.",
-    whatToNotice: [
-      "The setup is correct (speed, then time).",
-      "The division is wrong: 90/60 = 1.5, not 2.",
-      "No missing knowledge, the method is misapplied at the end.",
-    ],
-    why:
-      "The model has the right facts and approach, but executes incorrectly. That’s a reasoning breakdown.",
-  },
-  {
     id: "ex_recall",
     tab: "Recall error",
     classification: "Recall error",
@@ -75,6 +59,22 @@ const examples: ExampleItem[] = [
     ],
     why:
       "The core failure is factual accuracy. That’s recall failure, even if the explanation reads smoothly.",
+  },
+  {
+    id: "ex_reasoning",
+    tab: "Reasoning error",
+    classification: "Reasoning error",
+    prompt:
+      "A train travels 120 miles in 2 hours. At the same speed, how long will it take to travel 90 miles?",
+    response:
+      "Speed = 120/2 = 60 mph. Time = distance/speed = 90/60 = 2 hours. So it will take 2 hours.",
+    whatToNotice: [
+      "The setup is correct (speed, then time).",
+      "The division is wrong: 90/60 = 1.5, not 2.",
+      "No missing knowledge, the method is misapplied at the end.",
+    ],
+    why:
+      "The model has the right facts and approach, but executes incorrectly. That’s a reasoning breakdown.",
   },
   {
     id: "ex_mixed",
@@ -420,33 +420,14 @@ export default function Page() {
     "Start" | "Model" | "Heuristic" | "Examples" | "Practice"
   >("Start");
 
-  // Symmetric page padding + consistent 2-col grid everywhere
   const PAGE_PAD = "px-4 sm:px-8";
   const GRID = "grid grid-cols-[56px_1fr] gap-3";
 
   const [flow, setFlow] = useState<Flow>({});
   const result = useMemo(() => classify(flow), [flow]);
 
-  // ✅ FIX: persist exampleTab so clicking Examples doesn't reset it
+  // IMPORTANT: this keeps the Examples selection persistent.
   const [exampleTab, setExampleTab] = useState<ExampleTab>("Recall error");
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const saved = window.sessionStorage.getItem("hai_example_tab");
-    if (
-      saved === "Recall error" ||
-      saved === "Reasoning error" ||
-      saved === "Mixed signals"
-    ) {
-      setExampleTab(saved);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    window.sessionStorage.setItem("hai_example_tab", exampleTab);
-  }, [exampleTab]);
-
   const currentExample = examples.find((e) => e.tab === exampleTab)!;
 
   const [practiceIndex, setPracticeIndex] = useState(0);
@@ -607,11 +588,11 @@ export default function Page() {
       {/* content */}
       <div className={`mx-auto max-w-5xl ${PAGE_PAD} py-6`}>
         <div className={GRID}>
-          {/* spacer column to align text/cards with nav pills */}
           <div />
           <div className="grid gap-5">
+            {/* START */}
             {show("Start") && (
-              <>
+              <div className="print-section">
                 {printMode && <DividerLabel label="Start here" />}
                 <Card title="Start here: Focus on how the failure happened">
                   <p className="text-sm text-slate-700">
@@ -635,14 +616,27 @@ export default function Page() {
                     </p>
                   </div>
                 </Card>
-              </>
+              </div>
             )}
 
+            {/* MODEL */}
             {show("Model") && (
-              <>
+              <div className="print-section">
                 {printMode && <DividerLabel label="How models fail" />}
                 <Card title="How models fail: Two common failure types">
                   <div className="grid gap-3 md:grid-cols-2">
+                    <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="text-sm font-semibold">Recall error</div>
+                        <Badge tone="blue">Facts wrong/missing</Badge>
+                      </div>
+                      <p className="mt-2 text-sm text-slate-700">
+                        The model relies on incorrect, missing, or fabricated
+                        facts. The logic may look coherent, but the inputs are
+                        wrong.
+                      </p>
+                    </div>
+
                     <div className="rounded-2xl border border-slate-200 bg-white p-4">
                       <div className="flex items-center justify-between gap-2">
                         <div className="text-sm font-semibold">
@@ -655,25 +649,14 @@ export default function Page() {
                         incorrectly or breaks down across steps.
                       </p>
                     </div>
-
-                    <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="text-sm font-semibold">Recall error</div>
-                        <Badge tone="blue">Facts wrong/missing</Badge>
-                      </div>
-                      <p className="mt-2 text-sm text-slate-700">
-                        The model relies on incorrect, missing, or fabricated
-                        facts. The logic may look coherent, but the inputs are
-                        wrong.
-                      </p>
-                    </div>
                   </div>
                 </Card>
-              </>
+              </div>
             )}
 
+            {/* HEURISTIC */}
             {show("Heuristic") && (
-              <>
+              <div className="print-section">
                 {printMode && <DividerLabel label="How to decide" />}
                 <Card
                   title="How to decide: Classify most failures in under 20 seconds"
@@ -787,11 +770,12 @@ export default function Page() {
                     </div>
                   </div>
                 </Card>
-              </>
+              </div>
             )}
 
+            {/* EXAMPLES */}
             {show("Examples") && (
-              <>
+              <div className="print-section">
                 {printMode && <DividerLabel label="Examples" />}
                 <Card title="Examples: Spot the pattern fast">
                   <p className="text-sm text-slate-700">
@@ -819,9 +803,7 @@ export default function Page() {
                         className="rounded-full px-4 py-2 text-sm font-semibold transition hover:opacity-90"
                         style={{
                           background:
-                            exampleTab === "Mixed signals"
-                              ? "#EFE7FF"
-                              : "#FAF8FF",
+                            exampleTab === "Mixed signals" ? "#EFE7FF" : "#FAF8FF",
                           color: "#14151C",
                           border:
                             exampleTab === "Mixed signals"
@@ -831,6 +813,13 @@ export default function Page() {
                       >
                         Mixed signals
                       </button>
+
+                      <div className="w-full">
+                        <div className="mt-2 text-xs text-slate-600">
+                          Use “Mixed signals” to slow down and identify the first
+                          failure. Do not submit it as a label.
+                        </div>
+                      </div>
                     </div>
                   )}
 
@@ -842,11 +831,12 @@ export default function Page() {
                     )}
                   </div>
                 </Card>
-              </>
+              </div>
             )}
 
+            {/* PRACTICE */}
             {show("Practice") && (
-              <>
+              <div className="print-section">
                 {printMode && <DividerLabel label="You try!" />}
                 <Card
                   title="You try! Make the call, then calibrate"
@@ -900,21 +890,22 @@ export default function Page() {
                           <div className="mt-3 flex flex-wrap gap-2">
                             <Button
                               onClick={() => {
-                                setPracticeType("Reasoning error");
-                                setMixedMode(false);
-                              }}
-                              active={practiceType === "Reasoning error"}
-                            >
-                              Reasoning error
-                            </Button>
-                            <Button
-                              onClick={() => {
                                 setPracticeType("Recall error");
                                 setMixedMode(false);
                               }}
                               active={practiceType === "Recall error"}
                             >
                               Recall error
+                            </Button>
+
+                            <Button
+                              onClick={() => {
+                                setPracticeType("Reasoning error");
+                                setMixedMode(false);
+                              }}
+                              active={practiceType === "Reasoning error"}
+                            >
+                              Reasoning error
                             </Button>
 
                             <button
@@ -941,7 +932,7 @@ export default function Page() {
                                 Mixed signals is not a label.
                               </span>{" "}
                               It’s a prompt to find the first failure. Identify
-                              what broke first, then choose{" "}
+                              what broke first, then classify it as{" "}
                               <span className="font-semibold">Reasoning</span>{" "}
                               or <span className="font-semibold">Recall</span>.
                             </div>
@@ -993,7 +984,8 @@ export default function Page() {
 
                           {attempted && (
                             <div className="mt-3 text-xs text-slate-600">
-                              Submitted. Now calibrate against the expert.
+                              Answer submitted. Now compare your judgment to the
+                              expert.
                             </div>
                           )}
                         </div>
@@ -1056,23 +1048,11 @@ export default function Page() {
                     )}
                   </div>
                 </Card>
-              </>
-            )}
-
-            {/* Print-only scale note */}
-            {printMode && (
-              <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                <div className="text-sm font-semibold">Scale note</div>
-                <p className="mt-1 text-sm text-slate-700">
-                  This mini lesson is designed as a reusable template. Swap in
-                  project-specific examples while keeping the same decision
-                  steps and practice loop for consistent judgment across
-                  projects.
-                </p>
               </div>
             )}
 
-            {/* subtle bottom breathing room */}
+            {/* Print-only scale note */}
+
             <div className="pb-8" />
           </div>
         </div>
@@ -1086,9 +1066,29 @@ export default function Page() {
           main {
             background: white !important;
           }
+
+          /* Each major section starts on a new page (clean PDF) */
+          .print-section {
+            break-before: page;
+            page-break-before: always;
+          }
+          .print-section:first-of-type {
+            break-before: auto;
+            page-break-before: auto;
+          }
+
+          /* Prevent orphaned divider labels / headings */
+          .print-section > *:first-child {
+            break-after: avoid;
+            page-break-after: avoid;
+          }
+
+          /* Avoid splitting cards */
           section {
             break-inside: avoid;
+            page-break-inside: avoid;
           }
+
           pre {
             font-size: 11px;
             line-height: 1.35;
